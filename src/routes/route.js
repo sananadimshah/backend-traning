@@ -11,51 +11,65 @@ router.get('/test-me', function (req, res) {
 });
 
 // problem 1
-router.get('/movies', function (req, res){
-    const movies = ['Rang de basanti','yeh jawaani hai diwaani','fanaa','avengar']
+router.get('/movies', function (req, res) {
+    const movies = ['Rang de basanti', 'yeh jawaani hai diwaani', 'fanaa', 'avengar']
     res.send(movies)
-})
-// promblem 2
-router.get('/movies/:indexNumber', function(req, res){
-    const movies = ['Rang de basanti','yeh jawaani hai diwaani','fanaa','avengar']
-    let request = req.params
-    let index = request.indexNumber
-    console.log('movies',index)
-    res.send('movies')
-   
+   })
+
+    // promblem 2 n 3
+    router.get('/movies/:indexNumber', function (req, res) {
+        const movies = ['Rang de basanti', 'yeh jawaani hai diwaani', 'fanaa', 'avengar']
+        console.log(req.params.indexNumber)
+        let Index = req.params.indexNumber
+        if (Index < 0 || Index >= movies.length) {
+            return res.send('The index value is not correct, Please check the it')
+        }
+        let requiredMovie = movies[Index]
+        res.send(requiredMovie)
+
     })
-//promblem 3
-router.get('/films', function (req, res){
-    const films = [{
- 'id': 1,
- 'name': 'The Shining'
-}, {
- 'id': 2,
- 'name': 'Incendies'
-}, {
- 'id': 3,
- 'name': 'Rang de Basanti'
-}, {
- 'id': 4,
- 'name': 'Finding Nemo'
-}]
-res.send(films)
-})
-router.get('/films-details/:name', function (req, res){
-let value = req.params
-console.log("This is the request "+ JSON.stringify(requestParams))
-let filmNames = value.name
-console.log(filmNames)
-    res.send('hi')
 
- })
+    // promblem 4
+    router.get('/films', function (req, res) {
+        const films = [{
+            'id': 1,
+            'name': 'The Shining'
+        }, {
+            'id': 2,
+            'name': 'Incendies'
+        }, {
+            'id': 3,
+            'name': 'Rang de Basanti'
+        }, {
+            'id': 4,
+            'name': 'Finding Nemo'
+        }]
+        res.send(films)
+    })
+    // promblem 5
 
- // promblem 5
- router.get('/flims/:filmid', function(req, res){
- if (valve === req.params)}
-      { return value; {
-    else
-    } console.log('no such valve')
-})
+    router.get("/films/:filmId", function (req, res) {
+        const films = [{
+            "id": 1,
+            "name": "The Shining"
+        }, {
+            "id": 2,
+            "name": "Incendies"
+        }, {
+            "id": 3,
+            "name": "Rang de Basanti"
+        }, {
+            "id": 4,
+            "name": "Finding Nemo"
+        }]
 
-module.exports = router;
+        let filmId = req.params.filmId
+        for (let i = 0; i < films.length; i++) {
+            let film = films[i]
+            if (film.id == filmId) {
+                return res.send(film)
+            }
+        }
+        res.send("The film id doesn't match any movie")
+    })
+    module.exports = router;
