@@ -2,13 +2,8 @@ const mongoose = require('mongoose');
 
 
 
-const bookSchema = new mongoose.Schema( {
-    bookName: "string",
-    authorName: "string",
-    Category: "string",
-    year: "Number"
-}, { timestamps: true });
-    /*bookName: {
+const NovelSchema = new mongoose.Schema( {
+    bookName: {
         type : String,
         unique : true,
         required : true
@@ -16,17 +11,15 @@ const bookSchema = new mongoose.Schema( {
     author: {
         type : String,
         unique : true,
-        required : true
     },
-    category: {
+    Category: {
         type : String,
-        enum : ["self-help", "triller","fantasy","comedy","science fiction"]
     },
     year : {
         type : String,
         unique : true,
         required : true
-    },*/
+    }
+}, { timestamps: true });
 
-
-module.exports = mongoose.model('Book', bookSchema) 
+module.exports = mongoose.model('Note', NovelSchema) 
