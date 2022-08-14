@@ -11,6 +11,7 @@ const NovelSchema = new mongoose.Schema( {
     author: {
         type : String,
         unique : true,
+        required : true
     },
     Category: {
         type : String,
