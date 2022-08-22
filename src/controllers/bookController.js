@@ -1,49 +1,74 @@
-const BookModel= require("../models/bookModel")
-const AuthorModel= require("../models/authorModel")
 
-const createBook= async function (req, res) {
-    let data= req.body
-    let savedData= await BookModel.create(data)
-    res.send({msg: savedData})
-}
+const bookModel = require("../models/bookModel")
+const AuthorModel = require("../models/authorModel")
+const PublisherModel = require("../models/publisherModel")
 
-const createAuthor= async function (req, res) {
-    let data= req.body
-    let savedData= await AuthorModel.create(data)
-    res.send({msg: savedData})
-}
-// //List out the books written by "Chetan Bhagat" ( this will need 2 DB queries one after another- first query will find the author_id for "Chetan Bhagat”. Then next query will get the list of books with that author_id )
 
-const getBookList= async function (req, res) {
-    let authorID = await AuthorModel.findOne({author_name:"Chetan Bhagat"}).select({author_id:1,_id:0})
-    let allBookList= await BookModel.find(authorID)
-    res.send({msg:allBookList})
-}
+//In this api, you have to write a logic that validates the following :
+// The authorId is present in the request body. If absent send an error message that this detail is required
+// If present, make sure the authorId is a valid ObjectId in the author collection. If not then send an error message that the author is not present.
+// The publisherId is present in the request body. If absent send an error message that this detail is required
+// If present, make sure the publisherId is a valid ObjectId in the publisher collection. If not then send an error message that the publisher is not present.
 
-// //find the author of “Two states” and update the book price to 100;  Send back the author_name and updated price in response.  ( This will also need 2  queries- 1st will be a findOneAndUpdate. The second will be a find query aith author_id from previous query)
+const createBook = async function (req, res) {
+    let book = req.body
+    let authorId = book.author
+    let publisherId = book.publisher
 
-const findAuthor= async function (req, res) {
-    let bkprice= await BookModel.findOneAndUpdate(
-        { name: "Two States"} , 
-        { $set: {price:100}},
-        { new: true } 
-    )
-     let updateprice= bkprice.price;
-     let authorupdate = await AuthorModel.findOne({author_id:{$eq : bkprice.author_id}}).select({author_name:1,_id:0})
-     res.send({msg:authorupdate , updateprice })
-    
+    if (!authorId) {
+        return res.send("This detail is required")
     }
-// find the books between 50 to 100 reponds back their authors name
-const bookInRange= async function (req, res) {
-    let allBooks = await BookModel.find({price : {$gte : 50 , $lte : 100}})
-    let value = allBooks.map(x => x.author_id);
-    let NewBooks = await AuthorModel.find({author_id : value}).select({author_name : 1, _id : 0})
-    res.send(NewBooks)
-
+    if (!publisherId) {
+        return res.send("This detail is required")
+    }
+    let validauthorId = await AuthorModel.findById(authorId)
+    if (!validauthorId) {
+        return res.send("The author is not present")
+    }
+    let validpublisherId = await PublisherModel.findById(publisherId)
+    if (!validpublisherId) {
+        return res.send("The publisher is not present")
+    }
+    let bookCreated = await bookModel.create(book)
+    res.send({ data: bookCreated })
 }
-module.exports.createBook= createBook
-module.exports.createAuthor= createAuthor
-module.exports.getBookList= getBookList
-module.exports.findAuthor= findAuthor
-module.exports.bookInRange= bookInRange
 
+
+    // Write a GET api that fetches all the books along with their author details (you have to populate for this) as well the publisher details (you have to populate for this) 
+    const getBooksWithAllDetails = async function (req, res) {
+        let specificBook = await bookModel.find().populate(["author", "publisher"])
+        res.send({ data: specificBook })
+
+    }
+   //=========================================5===================================//
+    // a) Add a new boolean attribute in the book schema called isHardCover with a default false value. For the books published by 'Penguin' and 'HarperCollins', update this key to true.
+
+    
+const bookpublished = async function (req, res) {
+    let allbook = await PublisherModel.find({name :{$in :["Penguin", "HarperCollins"]}})
+    let newbook = await bookModel.updateMany(
+        ({publisherId:allbook},{$set:{isHardCover:true}})
+    )
+    res.send({ msg: newbook })
+    }
+// b)
+// For the books written by authors having a rating greater than 3.5, update the books price by 10 (For eg if old price for such a book is 50, new will be 60) 
+const bookprice = async function (req, res) {
+    let rat = await AuthorModel.find({rating :{$gt :3.5}})
+    let updatedprice = await bookModel.updateMany(
+        {authorId:rat},
+        {$inc:{ price :+10}})
+        res.send(updatedprice)   
+    
+}
+
+    // Write a GET api that fetches all the books along with their author details (you have to populate for this) as well the publisher details (you have to populate for this) 
+    const getBooks = async function (req, res) {
+        let allBooks = await bookModel.find().populate(["author", "publisher"])
+        res.send({ data: allBooks })
+
+    }
+    module.exports.createBook = createBook
+    module.exports.bookpublished = bookpublished
+    module.exports.bookprice = bookprice
+    module.exports.getBooks = getBooks
