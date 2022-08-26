@@ -8,6 +8,12 @@ const moment =require('moment')
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+mongoose.connect("mongodb+srv://functionupsana:99zr3eE9dRQ62e8a@cluster0.1d0h0gc.mongodb.net/functionupsana?retryWrites=true&w=majority", {
+    useNewUrlParser: true
+})
+.then( () => console.log("MongoDb is connected"))
+.catch ( err => console.log(err) )
+
 
 app.use (
     function (req, res, next) {
@@ -22,6 +28,6 @@ app.use (
 app.use('/', route);
 
 
-// app.listen(process.env.PORT || 3000, function () {
-//     console.log('Express app running on port ' + (process.env.PORT || 3000))
-// });
+app.listen(process.env.PORT || 3000, function () {
+    console.log('Express app running on port ' + (process.env.PORT || 3000))
+});
