@@ -81,11 +81,11 @@ let getOtp = async function (req, res) {
 let getDistrictsById = async function (req, res) {
 
     try {
-        let District = req.query.District_Id
-        let date = req.param.date
+        let District = req.query.District_Id;
+        let date = req.params.date
         let options = {
             method: 'get',
-            url: `https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/findByDistrict?District=${District}&date=${date}`,
+            url: `https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/findByDistrict?district_id=${District}&date=${date}`,
             
         }
         let result = await axios(options);

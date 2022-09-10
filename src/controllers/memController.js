@@ -1,48 +1,20 @@
-const UserModel= require("../models/userModel")
 let axios = require("axios")
 
-
-
-
-
-const basicCode= async function(req, res) {
-    let tokenDataInHeaders= req.headers.token
-    console.log(tokenDataInHeaders)
-
-    console.log( "HEADER DATA ABOVE")
-    console.log( "hey man, congrats you have reached the Handler")
-    res.send({ msg: "This is coming from controller (handler)"})
+let memCreation = async function(req, res){
+    try {
+        let data = req.query
+        var options = {
+            method: "post",
+            url: `https://api.imgflip.com/caption_image?template_id=${data.meme_id}&text0=${data.text0}&username=${data.username}&password=${data.password}`
+        }
+        
+        let result = await axios(options)
+        console.log(result.data)
+        res.status(200).send({ msg: result.data })
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-const createUser= async function (req, res) {
-    let data= req.body
-    let savedData= await UserModel.create(data)
-    res.send({msg: savedData})
-}
-
-const getUsersData= async function (req, res) {
-    let allUsers= await UserModel.find()
-    res.send({msg: allUsers})
-}
-
-module.exports.createUser= createUser
-module.exports.getUsersData= getUsersData
-module.exports.basicCode= basicCode
+    catch (err) {
+        console.log(err)
+        res.status(500).send({ msg: err.message })
+    }}
+    
+    module.exports.memCreation = memCreation
